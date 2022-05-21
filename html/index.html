@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>shaderc_webservice</title>
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      textarea {
+        font-family: monospace;
+        width: 90%;
+        min-height: 50vh;
+      }
+
+      .error {
+        font-family: monospace;
+        color: darkred;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>shaderc_webservice</h1>
+    <textarea>
+#version 320 es
+
+precision highp float;
+
+layout(location = 0) out vec4 fragColor;
+
+layout(location = 0) uniform float green;
+
+void main() {
+    fragColor = vec4(0.0, green, 0.0, 1.0);
+}
+    </textarea>
+    <div class="error"></div>
+    <button onclick="compile()">Compile</button>
+
+    <script>
+      async function compile() {
+        const code = document.querySelector("textarea").value;
+        const response = await fetch("compile", {
+          method: "POST",
+          body: code,
+        });
+        if (response.status === 200) {
+          const data = await response.blob();
+          download("shader.sprv", data);
+          console.log(data);
+        } else {
+          const data = await response.text();
+          document.querySelector(".error").innerText = data;
+          console.error(data);
+        }
+      }
+
+      function download(fileName, blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
