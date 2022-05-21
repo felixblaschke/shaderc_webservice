@@ -2,6 +2,8 @@
 
 Web service that compiles GLSL code to SPIR-V bytecode.
 
+💪 Webservice is powered by Dart with [shelf_plus](https://pub.dev/packages/shelf_plus).
+
 ## Usage
 
 - Make sure Dart is installed.
